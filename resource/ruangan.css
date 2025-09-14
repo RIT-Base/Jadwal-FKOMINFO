@@ -1,0 +1,147 @@
+/* Style untuk filter hari */
+.day-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.day-filter button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.day-filter button:hover {
+    border-color: var(--accent-color);
+}
+
+.day-filter button.active {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Style untuk setiap kartu ruangan */
+.ruang-card {
+    background-color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ruang-card h3 {
+    margin-top: 0;
+    color: var(--header-color);
+    font-size: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Tampilan Teks (Jam Kosong) */
+.info-kosong {
+    font-size: 1rem;
+    color: #ffffff; /* Warna hijau untuk menandakan kosong */
+    margin-bottom: 1.5rem;
+}
+
+.info-kosong span {
+    font-weight: bold;
+}
+
+.info-kosong.penuh {
+    color: var(--accent-color); /* Warna merah jika penuh */
+}
+
+/* 1. Kontainer ini bertindak sebagai "jendela" yang bisa scroll */
+.timeline-container {
+    width: 100%;         /* Pastikan lebarnya mengikuti lebar kartu */
+    overflow-y: auto;    /* KUNCI UTAMA: Aktifkan scroll horizontal HANYA untuk elemen ini */
+    padding-bottom: 10px;
+}
+
+/* 2. Konten di dalamnya kita paksa agar lebar */
+.timeline-bar {
+    min-width: 700px;
+    width: 100%;
+    height: 30px;
+    background-color: var(--secondary-color);
+    border-radius: 5px;
+    position: relative; /* <<< INI KUNCINYA */
+    overflow: hidden;
+}
+
+.time-markers {
+    min-width: 700px;    /* Lebar konten dibuat lebih besar dari layar HP */
+}
+
+/* 3. Style untuk scrollbar (opsional, tapi disarankan) */
+.timeline-container::-webkit-scrollbar {
+    height: 6px;
+}
+.timeline-container::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 3px;
+}
+
+.timeline-container::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+
+.schedule-block {
+    position: absolute;
+    height: 100%;
+    background-color: var(--accent-color);
+    border-right: 1px solid var(--bg-color);
+    box-sizing: border-box;
+    cursor: help;
+    transition: filter 0.2s;
+}
+
+.schedule-block:hover {
+    filter: brightness(1.2);
+}
+
+.time-markers {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 0.75rem;
+    color: #888;
+}
+
+#ruanganSearch {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    color: var(--text-color);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Style untuk Custom Tooltip */
+.custom-tooltip {
+    position: absolute; /* Mengikuti posisi kursor */
+    background-color: #000;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.875rem;
+    z-index: 9999;
+    pointer-events: none; /* Agar tooltip tidak mengganggu mouse */
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}

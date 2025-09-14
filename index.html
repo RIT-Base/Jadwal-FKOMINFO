@@ -5,66 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalender Kuliah FKOMINFO - RIT</title>
     <link rel="stylesheet" href="resource/styles.css">
-    <link rel="icon" href="https://avatars.githubusercontent.com/u/149635902?s=200&v=4" type="image/png">
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/202061261?s=400&u=80f9d7669e799d3be3a78575889b4ef55a7ce77b&v=4" type="image/png">
 </head>
 <body>
     <div class="modal-overlay"></div>
 
-    <div class="filter-dropdown" id="filterDropdown">
-        <div class="modal-header">
-            <h2>Filter & Tampilan</h2>
-            <button class="close-modal" id="closeModalBtn">&times;</button>
-        </div>
-        <div class="modal-content">
-            <div class="filter-group">
-                <h3>Jurusan</h3>
-                <div class="filter-options" id="jurusanFilterContainer">
-                    </div>
-            </div>
-            <div class="filter-group">
-                <h3>Semester</h3>
-                <div class="filter-options" id="semesterFilterContainer">
-                    </div>
-            </div>
-            <div class="filter-group">
-                <h3>Kelas</h3>
-                <div class="filter-options" id="kelasFilterContainer">
-                    </div>
-            </div>
-            <hr class="separator">
-            <div class="filter-group">
-                <h3>Tampilan Kolom</h3>
-                <div class="preset-buttons">
-                    <button id="presetBiasa">Biasa</button>
-                    <button id="presetLengkap">Lengkap</button>
-                </div>
-                <div class="checkbox-group" id="columnToggleContainer">
-                    <label><input type="checkbox" name="kolom" value="Jurusan" checked> Jurusan</label>
-                    <label><input type="checkbox" name="kolom" value="Jam" checked> Jam</label>
-                    <label><input type="checkbox" name="kolom" value="Ruang" checked> Ruang</label>
-                    <label><input type="checkbox" name="kolom" value="Matakuliah" checked> Matakuliah</label>
-                    <label><input type="checkbox" name="kolom" value="Semester" checked> Semester</label>
-                    <label><input type="checkbox" name="kolom" value="Kode"> Kode</label>
-                    <label><input type="checkbox" name="kolom" value="SKS"> SKS</label>
-                    <label><input type="checkbox" name="kolom" value="Dosen"> Dosen</label>
-                    <label><input type="checkbox" name="kolom" value="Kelas"> Kelas</label>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-secondary" id="resetFilterBtn">Hapus Semua Filter</button>
-        </div>
-    </div>
-
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="https://avatars.githubusercontent.com/u/149635902?s=200&v=4" alt="Logo RIT" class="logo">
+                <img src="https://avatars.githubusercontent.com/u/202061261?s=400&u=80f9d7669e799d3be3a78575889b4ef55a7ce77b&v=4" alt="Logo RIT" class="logo">
                 <h1>Kalender Kuliah FKOMINFO</h1>
             </div>
             <nav>
                 <a href="index.html" class="active">Jadwal Kuliah</a>
-                <a href="ruangan.html">Cek Ruangan</a>
+                <a href="ruangan.html">Cek Ruangan Kosong</a>
                 <a href="perbandingan.html">Perbandingan Jadwal</a>
             </nav>
         </div>
@@ -74,11 +28,70 @@
 
     <main class="container">
         <section class="top-controls">
-            <input type="text" id="searchInput" placeholder="Cari Matakuliah, Dosen, atau Ruang...">
-            <button id="openFilterBtn" class="filter-trigger">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                <span>Filter</span>
-            </button>
+            <div class="search-bar-container">
+                <input type="text" id="searchInput" placeholder="Cari Matakuliah, Dosen, atau Ruangan...">
+            </div>
+            <div class="control-buttons-container">
+                <div class="control-group">
+                    <button id="openFilterBtn" class="control-btn">
+                        <span>Filter</span>
+                    </button>
+                    <div class="dropdown-menu" id="filterDropdown">
+                        <div class="modal-header">
+                            <h2>Filter Jadwal</h2>
+                            <button class="close-modal" id="closeFilterBtn">&times;</button>
+                        </div>
+                        <div class="modal-content">
+                            <div class="filter-group">
+                                <h3>Jurusan</h3>
+                                <div class="filter-options" id="jurusanFilterContainer"></div>
+                            </div>
+                            <div class="filter-group">
+                                <h3>Semester</h3>
+                                <div class="filter-options" id="semesterFilterContainer"></div>
+                            </div>
+                            <div class="filter-group">
+                                <h3>Kelas</h3>
+                                <div class="filter-options" id="kelasFilterContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <button id="openTampilanBtn" class="control-btn">
+                        <span>Tampilan</span>
+                    </button>
+                    <div class="dropdown-menu" id="tampilanDropdown">
+                        <div class="modal-header">
+                            <h2>Tampilan Kolom</h2>
+                             <button class="close-modal" id="closeTampilanBtn">&times;</button>
+                        </div>
+                        <div class="modal-content">
+                             <div class="preset-buttons">
+                                <button id="presetBiasa">Biasa</button>
+                                <button id="presetLengkap">Lengkap</button>
+                            </div>
+                            <hr class="separator">
+                            <div class="checkbox-group" id="columnToggleContainer">
+                                <label><input type="checkbox" name="kolom" value="Jurusan" checked> Jurusan</label>
+                                <label><input type="checkbox" name="kolom" value="Jam" checked> Jam</label>
+                                <label><input type="checkbox" name="kolom" value="Ruang" checked> Ruang</label>
+                                <label><input type="checkbox" name="kolom" value="Matakuliah" checked> Matakuliah</label>
+                                <label><input type="checkbox" name="kolom" value="Semester" checked> Semester</label>
+                                <label><input type="checkbox" name="kolom" value="Kode"> Kode</label>
+                                <label><input type="checkbox" name="kolom" value="SKS"> SKS</label>
+                                <label><input type="checkbox" name="kolom" value="Dosen"> Dosen</label>
+                                <label><input type="checkbox" name="kolom" value="Kelas"> Kelas</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="resetFilterBtn" class="control-btn reset-btn">
+                    <span>Reset</span>
+                </button>
+            </div>
         </section>
 
         <section id="jadwal-container">
@@ -88,8 +101,8 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Republic of Information Technology (RIT) - Universitas Garut</p>
-            <p>Menemukan jadwal yang tidak akurat? <a href="https://wa.me/6281234567890?text=Halo%20Admin%20RIT,%20saya%20menemukan%20jadwal%20yang%20tidak%20akurat%20di%20website." target="_blank">Hubungi kami di WhatsApp</a></p>
+            <p>&copy; 2025 Kazuki Fujimaru - RIT</p>
+            <p>Menemukan jadwal yang tidak akurat? <a href="https://wa.me/628997238259?text=Halo%20Admin%20RIT,%20saya%20menemukan%20jadwal%20yang%20tidak%20akurat%20di%20website." target="_blank">Hubungi kami di WhatsApp</a></p>
         </div>
     </footer>
 
