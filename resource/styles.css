@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+:root {
+    --bg-color: #121212;
+    --primary-color: #1e1e1e;
+    --secondary-color: #2a2a2a;
+    --accent-color: #05d7e5;
+    --text-color: #e0e0e0;
+    --header-color: #ffffff;
+    --border-color: #333333;
+    --table-header-bg: #2a2a2a;
+    --table-row-hover: #252525;
+}
+
+/* ... (Bagian body, header, nav, dll. tetap sama) ... */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+header { background-color: var(--primary-color); padding: 1rem 0; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; }
+header .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.logo-container { display: flex; align-items: center; gap: 15px; }
+.logo { height: 40px; }
+header h1 { font-size: 1.5rem; color: var(--header-color); }
+nav { display: flex; gap: 1rem; }
+nav a { color: var(--text-color); text-decoration: none; font-weight: 500; padding: 5px 10px; border-radius: 5px; transition: background-color 0.3s; }
+nav a:hover, nav a.active { background-color: var(--accent-color); color: #fff; }
+
+/* --- STYLE BARU UNTUK FILTER DROPDOWN & BOTTOM SHEET --- */
+
+.top-controls {
+    position: relative; /* Penting untuk positioning dropdown */
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    align-items: center;
+}
+#searchInput { flex-grow: 1; padding: 0.75rem; background-color: var(--primary-color); border: 1px solid var(--border-color); border-radius: 5px; color: var(--text-color); font-size: 1rem; }
+.filter-trigger { display: flex; align-items: center; gap: 8px; padding: 0.75rem 1rem; background-color: var(--primary-color); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 5px; cursor: pointer; transition: background-color 0.3s; }
+.filter-trigger:hover, .filter-trigger.active { background-color: var(--secondary-color); border-color: var(--accent-color); }
+
+/* Modal Overlay */
+.modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.6); z-index: 1999; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+
+/* Filter Dropdown (Desktop) */
+.filter-dropdown {
+    position: absolute;
+    top: calc(100% + 10px); /* Tampil di bawah tombol filter */
+    right: 0;
+    width: 450px;
+    max-height: 70vh;
+    background-color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease-in-out;
+}
+body.modal-open .modal-overlay { opacity: 1; visibility: visible; }
+body.modal-open .filter-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+
+/* Konten di dalam Modal */
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+.close-modal { background: none; border: none; color: var(--text-color); font-size: 2rem; cursor: pointer; }
+.modal-content { overflow-y: auto; padding: 1.5rem; }
+.filter-group { margin-bottom: 1.5rem; }
+.filter-group h3 { margin-bottom: 0.75rem; font-size: 1rem; font-weight: 500; color: var(--header-color); }
+.filter-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.filter-options button { padding: 6px 12px; background-color: var(--secondary-color); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+.filter-options button:hover { border-color: var(--accent-color); }
+.filter-options button.active { background-color: var(--accent-color); border-color: var(--accent-color); color: #fff; }
+.separator { border: none; border-top: 1px solid var(--border-color); margin: 1.5rem 0; }
+.preset-buttons { display: flex; gap: 10px; }
+.preset-buttons button { padding: 8px 15px; border: 1px solid var(--accent-color); background-color: transparent; color: var(--accent-color); border-radius: 5px; cursor: pointer; }
+.checkbox-group { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 1rem; }
+
+.modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); flex-shrink: 0; }
+.modal-footer .btn-secondary { width: 100%; padding: 0.75rem; background-color: var(--secondary-color); color: var(--text-color); border: none; border-radius: 5px; cursor: pointer; }
+
+/* ... (Bagian Jadwal Table & Footer tetap sama) ... */
+.day-schedule { margin-bottom: 2.5rem; }
+.day-schedule h2 { font-size: 1.8rem; color: var(--accent-color); margin-bottom: 1rem; }
+.table-container { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background-color: var(--primary-color); }
+th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+thead th { background-color: var(--table-header-bg); color: var(--header-color); font-weight: 700; }
+tbody tr:hover { background-color: var(--table-row-hover); }
+#loading { text-align: center; padding: 2rem; font-size: 1.2rem; }
+footer { background-color: var(--primary-color); text-align: center; padding: 1.5rem 0; margin-top: 2rem; border-top: 1px solid var(--border-color); font-size: 0.9rem; }
+footer a { color: var(--accent-color); text-decoration: none; font-weight: 500; }
+
+/* --- MOBILE - Bottom Sheet --- */
+@media (max-width: 768px) {
+    header .container { flex-direction: column; gap: 1rem; }
+    header h1 { font-size: 1.2rem; }
+
+    .filter-dropdown {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 80vh;
+        border-radius: 16px 16px 0 0;
+        border: none;
+        border-top: 1px solid var(--border-color);
+        transform: translateY(100%); /* Sembunyi di bawah */
+        transition: transform 0.3s ease-in-out;
+    }
+    body.modal-open .filter-dropdown {
+        transform: translateY(0);
+    }
+    /* Membuat filter options bisa di-scroll horizontal di mobile */
+    .filter-options {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 10px; /* Ruang untuk scrollbar */
+    }
+    .filter-options button {
+        flex-shrink: 0; /* Mencegah tombol menyusut */
+    }
+    /* Sembunyikan scrollbar agar lebih rapi */
+    .filter-options::-webkit-scrollbar { display: none; }
+    .filter-options { -ms-overflow-style: none; scrollbar-width: none; }
+}
