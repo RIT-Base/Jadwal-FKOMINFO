@@ -3,35 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perbandingan Jadwal - FKOMINFO</title>
+    <title>Perakit Jadwal - FKOMINFO</title>
     <link rel="stylesheet" href="resource/styles.css">
-    <link rel="icon" href="https://avatars.githubusercontent.com/u/149635902?s=200&v=4" type="image/png">
+    <link rel="stylesheet" href="resource/perbandingan.css">
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/202061261?s=400&u=80f9d7669e799d3be3a78575889b4ef55a7ce77b&v=4" type="image/png">
 </head>
 <body>
+    <div class="overlay"></div>
+
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="https://avatars.githubusercontent.com/u/149635902?s=200&v=4" alt="Logo RIT" class="logo">
+                <img src="https://avatars.githubusercontent.com/u/202061261?s=400&u=80f9d7669e799d3be3a78575889b4ef55a7ce77b&v=4" alt="Logo RIT" class="logo">
                 <h1>Kalender Kuliah FKOMINFO</h1>
             </div>
             <nav>
                 <a href="index.html">Jadwal Kuliah</a>
                 <a href="ruangan.html">Cek Ruangan</a>
-                <a href="perbandingan.html" class="active">Perbandingan Jadwal</a>
+                <a href="perbandingan.html" class="active">Perakit Jadwal</a>
             </nav>
         </div>
     </header>
 
-    <main class="container">
-        <h1>Perbandingan Jadwal</h1>
-        <p>Fitur ini sedang dalam pengembangan. Di sini Anda bisa menambahkan beberapa jadwal (berdasarkan filter) dan melihatnya dalam satu tampilan timeline untuk mendeteksi jadwal yang bentrok.</p>
+    <div class="builder-container">
+        <aside class="control-panel" id="control-panel">
+            <div class="panel-header">
+                <h3>Filter & Tambah Jadwal</h3>
+                <button class="close-panel" id="close-panel-btn">&times;</button>
+            </div>
+            <div class="panel-content">
+                <div class="filter-group">
+                    <label for="jurusanFilter">Jurusan</label>
+                    <select id="jurusanFilter"></select>
+                    <label for="semesterFilter">Semester</label>
+                    <select id="semesterFilter"></select>
+                    <label for="kelasFilter">Kelas</label>
+                    <select id="kelasFilter"></select>
+                </div>
+                
+                <hr>
+
+                <div class="search-group">
+                    <label for="search-input">Cari Matkul Satuan</label>
+                    <input type="text" id="search-input" placeholder="Contoh: Basis Data">
+                </div>
+                <ul class="search-results" id="search-results-list">
+                    </ul>
+            </div>
+        </aside>
+
+        <main class="timeline-main">
+            <div id="timeline-view">
+                </div>
         </main>
+    </div>
+
+    <button class="fab" id="fab-open-controls">+</button>
+
+    <div class="overlap-popover" id="overlap-popover"></div>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2025 Kazuki Fujimaru - RIT</p>
-            <p>Menemukan jadwal yang tidak akurat? <a href="https://wa.me/628997238259?text=Halo%20Admin%20RIT,%20saya%20menemukan%20jadwal%20yang%20tidak%20akurat%20di%20website." target="_blank">Hubungi kami di WhatsApp</a></p>
-        </div>
+    <div class="container">
+        <p>&copy; 2025 Kazuki Fujimaru - RIT</p>
+        <p>Menemukan jadwal yang tidak akurat? <a href="https://wa.me/628997238259?text=Halo%20Admin%20RIT,%20saya%20menemukan%20jadwal%20yang%20tidak%20akurat%20di%20website." target="_blank">Hubungi kami di WhatsApp</a></p>
+    </div>
     </footer>
+
+    <script src="resource/perbandingan.js"></script>
 </body>
 </html>

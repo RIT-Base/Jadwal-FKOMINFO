@@ -105,9 +105,9 @@ body.modal-open .modal-overlay {
 .dropdown-menu {
     position: absolute;
     top: calc(100% + 10px);
-    left: 0;
+    right: 0;
     width: 380px;
-    max-height: 70vh;
+    max-height: 100vh;
     background-color: var(--primary-color);
     border: 1px solid var(--border-color);
     border-radius: 8px;
