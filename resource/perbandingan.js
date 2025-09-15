@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const searchTerm = searchInput.value.toLowerCase();
             return (j === 'Semua' || course.Jurusan === j) && (s === 'Semua' || course.Semester === s) && (k === 'Semua' || course.Kelas === k) && (course.Matakuliah.toLowerCase().includes(searchTerm));
         });
-        searchResultsList.innerHTML = filtered.map(course => `<li><div class="info"><strong>${course.Matakuliah}</strong><small>${course.Jurusan} - Kls ${course.Kelas} | ${course.Hari}, ${course.Mulai.slice(0,5)} - ${course.Selesai.slice(0,5)}</small></div><button class="btn-add-single" data-id="${course.id}">+</button></li>`).join('');
+        searchResultsList.innerHTML = filtered.map(course => `<li><div class="info"><strong>${course.Matakuliah}</strong><small>${course.Jurusan} - ${course.Kelas} | ${course.Hari}, ${course.Mulai.slice(0,5)} - ${course.Selesai.slice(0,5)} | Sem ${course.Semester} </small></div><button class="btn-add-single" data-id="${course.id}">+</button></li>`).join('');
     }
     
     function addCourseById(id) {
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 scheduleEl.className = 'schedule-item';
                 scheduleEl.style.gridRow = `${startRow + 2} / span ${duration}`;
                 scheduleEl.style.gridColumn = `${col} / span 1`;
-                scheduleEl.innerHTML = `<div class="item-content"><strong>${course.Matakuliah}</strong><small>${course.Jurusan} - Kls ${course.Kelas} | ${course.Ruang}</small></div><button class="btn-remove-item" data-id="${course.id}">&times;</button>`;
+                scheduleEl.innerHTML = `<div class="item-content"><strong>${course.Matakuliah}</strong><small>${course.Jurusan} - ${course.Kelas} | ${course.Ruang} | Semester ${course.Semester}</small></div><button class="btn-remove-item" data-id="${course.id}">&times;</button>`;
                 timelineView.appendChild(scheduleEl);
             }
         });

@@ -149,8 +149,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     container.addEventListener('mousemove', (e) => {
         if (tooltip) {
-            tooltip.style.left = `${e.pageX + 15}px`;
-            tooltip.style.top = `${e.pageY - 15}px`;
+            const offsetY = 20;
+            const tooltipWidth = tooltip.offsetWidth;
+            const pageWidth = window.innerWidth;
+
+            // Default: center on cursor
+            let left = e.pageX - tooltipWidth / 2;
+
+            // Prevent going beyond the left edge
+            if (left < 0) {
+                left = 0;
+            }
+
+            // Prevent going beyond the right edge
+            if (left + tooltipWidth > pageWidth) {
+                left = pageWidth - tooltipWidth;
+            }
+
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${e.pageY + offsetY}px`;
         }
     });
 
