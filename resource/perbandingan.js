@@ -1,12 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // URL DIUBAH KE TSV
     const tsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7JM3GPuEhSQgyZVGrgpMDu11J8JE5RcATgG33CTh1xwPd46W2Q83lK2W_aq7vDRCT7LXwZSKoZ-qf/pub?gid=1414529007&single=true&output=tsv';
 
-    // State
     let allData = [];
     let activeCourses = [];
 
-    // DOM Elements
     const jurusanFilter = document.getElementById('jurusanFilter');
     const semesterFilter = document.getElementById('semesterFilter');
     const kelasFilter = document.getElementById('kelasFilter');
@@ -46,23 +43,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function setupEventListeners() {
-        [jurusanFilter, semesterFilter, kelasFilter, searchInput].forEach(el => {
-            el.addEventListener('input', updateSearchResults);
-        });
+        [jurusanFilter, semesterFilter, kelasFilter, searchInput].forEach(el => el.addEventListener('input', updateSearchResults));
         searchResultsList.addEventListener('click', (e) => {
-            if (e.target.classList.contains('btn-add-single')) {
-                addCourseById(parseInt(e.target.dataset.id, 10));
-            }
+            if (e.target.classList.contains('btn-add-single')) addCourseById(parseInt(e.target.dataset.id, 10));
         });
         fab.addEventListener('click', () => togglePanel(true));
         closePanelBtn.addEventListener('click', () => togglePanel(false));
         overlay.addEventListener('click', () => togglePanel(false));
         timelineView.addEventListener('click', handleTimelineClick);
         document.addEventListener('click', (e) => {
-            if (!popover.contains(e.target) && !e.target.classList.contains('overlap-indicator')) {
-                popover.style.display = 'none';
-            }
+            if (!popover.contains(e.target) && !e.target.classList.contains('overlap-indicator')) popover.style.display = 'none';
         });
+        popover.addEventListener('click', handlePopoverClick);
     }
 
     function updateSearchResults() {
@@ -71,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const searchTerm = searchInput.value.toLowerCase();
             return (j === 'Semua' || course.Jurusan === j) && (s === 'Semua' || course.Semester === s) && (k === 'Semua' || course.Kelas === k) && (course.Matakuliah.toLowerCase().includes(searchTerm));
         });
-        searchResultsList.innerHTML = filtered.map(course => `<li><div class="info"><strong>${course.Matakuliah}</strong><small>${course.Hari}, ${course.Mulai.slice(0,5)} - ${course.Selesai.slice(0,5)}</small></div><button class="btn-add-single" data-id="${course.id}">+</button></li>`).join('');
+        searchResultsList.innerHTML = filtered.map(course => `<li><div class="info"><strong>${course.Matakuliah}</strong><small>${course.Jurusan} - Kls ${course.Kelas} | ${course.Hari}, ${course.Mulai.slice(0,5)} - ${course.Selesai.slice(0,5)}</small></div><button class="btn-add-single" data-id="${course.id}">+</button></li>`).join('');
     }
     
     function addCourseById(id) {
@@ -84,10 +76,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // === FUNGSI RENDER DIROMBAK TOTAL ===
     function renderTimeline() {
         const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         const startTime = 7, endTime = 19;
         
+        // 1. Gambar grid statis
         let gridHTML = '';
         gridHTML += '<div class="timeline-time">Waktu</div>';
         days.forEach(day => gridHTML += `<div class="timeline-header">${day}</div>`);
@@ -100,51 +94,69 @@ document.addEventListener('DOMContentLoaded', async () => {
         timelineView.style.gridTemplateRows = `40px repeat(${(endTime - startTime) * 2}, 1fr)`;
         timelineView.innerHTML = gridHTML;
         
+        if (activeCourses.length === 0) return;
+
+        // 2. Petakan jadwal ke grid virtual & identifikasi yang bentrok
         const grid = {};
         const timeToRow = (timeStr) => (parseInt(timeStr.slice(0, 2)) - startTime) * 2 + (parseInt(timeStr.slice(3, 5)) >= 30 ? 1 : 0);
+        const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
         
+        const overlappedCourseIds = new Set();
         activeCourses.forEach(course => {
-            const dayIndex = days.indexOf(course.Hari);
+            const formattedDay = capitalize(course.Hari);
+            const dayIndex = days.indexOf(formattedDay);
             if (dayIndex === -1) return;
             const startRow = timeToRow(course.Mulai), duration = timeToRow(course.Selesai) - startRow;
             if (duration <= 0) return;
             const col = dayIndex + 2;
-            
             for (let i = 0; i < duration; i++) {
                 const key = `${startRow + i}-${col}`;
                 if (!grid[key]) grid[key] = [];
                 grid[key].push(course);
+                if (grid[key].length > 1) {
+                    grid[key].forEach(c => overlappedCourseIds.add(c.id));
+                }
             }
-            
-            const scheduleEl = document.createElement('div');
-            scheduleEl.className = 'schedule-item';
-            scheduleEl.style.gridRow = `${startRow + 2} / span ${duration}`;
-            
-            // === PERBAIKAN FINAL ADA DI SINI ===
-            scheduleEl.style.gridColumn = `${col} / span 1`;
-            
-            scheduleEl.innerHTML = `
-                <div class="item-content">
-                    <strong>${course.Matakuliah}</strong>
-                    <small>${course.Ruang}</small>
-                </div>
-                <button class="btn-remove-item" data-id="${course.id}">&times;</button>
-            `;
-            timelineView.appendChild(scheduleEl);
         });
 
-        Object.entries(grid).forEach(([key, courses]) => {
-            if (courses.length > 1) {
-                const [row, col] = key.split('-').map(Number);
+        // 3. Render jadwal yang TIDAK bentrok
+        activeCourses.forEach(course => {
+            if (!overlappedCourseIds.has(course.id)) {
+                const formattedDay = capitalize(course.Hari);
+                const dayIndex = days.indexOf(formattedDay);
+                const startRow = timeToRow(course.Mulai), duration = timeToRow(course.Selesai) - startRow;
+                const col = dayIndex + 2;
+
+                const scheduleEl = document.createElement('div');
+                scheduleEl.className = 'schedule-item';
+                scheduleEl.style.gridRow = `${startRow + 2} / span ${duration}`;
+                scheduleEl.style.gridColumn = `${col} / span 1`;
+                scheduleEl.innerHTML = `<div class="item-content"><strong>${course.Matakuliah}</strong><small>${course.Jurusan} - Kls ${course.Kelas} | ${course.Ruang}</small></div><button class="btn-remove-item" data-id="${course.id}">&times;</button>`;
+                timelineView.appendChild(scheduleEl);
+            }
+        });
+
+        // 4. Render INDIKATOR untuk grup yang bentrok
+        const renderedOverlapGroups = new Set();
+        Object.values(grid).forEach(coursesInCell => {
+            if (coursesInCell.length > 1) {
+                const groupSignature = coursesInCell.map(c => c.id).sort().join('-');
+                if (renderedOverlapGroups.has(groupSignature)) return;
+
+                const day = capitalize(coursesInCell[0].Hari);
+                const col = days.indexOf(day) + 2;
+                const groupStartRow = Math.min(...coursesInCell.map(c => timeToRow(c.Mulai)));
+                const groupEndRow = Math.max(...coursesInCell.map(c => timeToRow(c.Selesai)));
+                const duration = groupEndRow - groupStartRow;
+
                 const indicator = document.createElement('div');
                 indicator.className = 'overlap-indicator';
-                indicator.textContent = `+${courses.length} Bentrok`;
-                indicator.style.gridRow = `${row + 2}`;
-                indicator.style.gridColumn = `${col}`;
-                indicator.dataset.courses = JSON.stringify(courses);
-                
-                timelineView.querySelectorAll(`.schedule-item[style*="grid-row-start: ${row + 2};"][style*="grid-column-start: ${col};"]`).forEach(el => el.remove());
+                indicator.textContent = `+${coursesInCell.length} Bentrok`;
+                indicator.style.gridRow = `${groupStartRow + 2} / span ${duration}`;
+                indicator.style.gridColumn = `${col} / span 1`;
+                indicator.dataset.courses = JSON.stringify(coursesInCell);
                 timelineView.appendChild(indicator);
+                renderedOverlapGroups.add(groupSignature);
             }
         });
     }
@@ -154,24 +166,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         overlay.classList.toggle('is-active', show);
     }
     
-    // === FUNGSI INI DIPERBARUI UNTUK MENDETEKSI KLIK HAPUS & POPOVER ===
     function handleTimelineClick(e) {
-        // Logika untuk tombol hapus
         if (e.target.classList.contains('btn-remove-item')) {
             const idToRemove = parseInt(e.target.dataset.id, 10);
             activeCourses = activeCourses.filter(c => c.id !== idToRemove);
             renderTimeline();
-            return; // Hentikan eksekusi agar tidak membuka popover
+            return;
         }
-
-        // Logika untuk popover
         if (e.target.classList.contains('overlap-indicator')) {
             const courses = JSON.parse(e.target.dataset.courses);
-            popover.innerHTML = `<h4>Jadwal Bentrok</h4><ul>` + courses.map(c => `<li><span class="popover-color-dot" style="background-color: #fff;"></span>${c.Matakuliah} (${c.Kelas})</li>`).join('') + `</ul>`;
+            // Konten popover sekarang menyertakan tombol hapus
+            popover.innerHTML = `<h4>Jadwal Bentrok</h4><ul>` + 
+                courses.map(c => `
+                    <li>
+                        <div class="popover-item-info">
+                            <span class="popover-color-dot" style="background-color: #fff;"></span>
+                            ${c.Matakuliah} (${c.Kelas})
+                        </div>
+                        <button class="btn-remove-popover" data-id="${c.id}">&times;</button>
+                    </li>
+                `).join('') + `</ul>`;
+            
             popover.style.display = 'block';
             const rect = e.target.getBoundingClientRect();
-            popover.style.left = `${rect.left}px`;
+            // Posisi popover disesuaikan agar tidak keluar layar
+            popover.style.left = `${Math.min(rect.left, window.innerWidth - popover.offsetWidth - 20)}px`;
             popover.style.top = `${rect.bottom + 5}px`;
+        }
+    }
+
+    // TAMBAHKAN FUNGSI BARU INI
+    function handlePopoverClick(e) {
+        if (e.target.classList.contains('btn-remove-popover')) {
+            const idToRemove = parseInt(e.target.dataset.id, 10);
+            // Hapus mata kuliah dari daftar utama
+            activeCourses = activeCourses.filter(c => c.id !== idToRemove);
+            // Sembunyikan popover
+            popover.style.display = 'none';
+            // Gambar ulang timeline
+            renderTimeline();
         }
     }
 

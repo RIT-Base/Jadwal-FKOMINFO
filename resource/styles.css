@@ -174,7 +174,7 @@ footer a { color: var(--accent-color); text-decoration: none; font-weight: 500; 
 }
 
 /* Tampilan Mobile */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     header .container { flex-direction: column; gap: 1rem; }
     header h1 { font-size: 1.2rem; }
 
@@ -210,6 +210,8 @@ footer a { color: var(--accent-color); text-decoration: none; font-weight: 500; 
 
     .day-schedule h2 { font-size: 1.5rem; }
     th, td { padding: 8px 8px; font-size: 0.875rem; }
+
+    nav { font-size: 0.8rem;}
 }
 
 /* Mencegah teks di kolom Jam turun baris */

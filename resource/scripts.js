@@ -203,7 +203,7 @@ async function initJadwalPage() {
     searchInput.addEventListener('input', applyFilters);
     columnToggles.forEach(toggle => toggle.addEventListener('change', applyColumnVisibility));
     presetBiasa.addEventListener('click', () => {
-        const biasaCols = ['Jurusan', 'Jam', 'Ruang', 'Matakuliah', 'Semester'];
+        const biasaCols = ['Jurusan', 'Jam', 'Ruang', 'Matakuliah', 'Semester', 'Kelas'];
         columnToggles.forEach(t => t.checked = biasaCols.includes(t.value));
         applyColumnVisibility();
     });
