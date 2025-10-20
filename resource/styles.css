@@ -218,3 +218,29 @@ footer a { color: var(--accent-color); text-decoration: none; font-weight: 500; 
 td[data-col="Jam"] {
     white-space: nowrap;
 }
+
+/* --- Style untuk Timestamp Update Terakhir --- */
+.last-updated-timestamp {
+    display: block;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-top: -5px; /* Sedikit ditarik ke atas di bawah h1 */
+}
+
+/* Memastikan grup H1/Span baru berperilaku baik */
+.logo-container div {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hapus margin default browser pada H1 di dalam grup baru */
+.logo-container h1 {
+    margin: 0;
+}
+
+/* Sesuaikan ukuran font H1 agar konsisten dengan style asli di mobile */
+@media (max-width: 768px) {
+    .logo-container h1 {
+        font-size: 1.2rem;
+    }
+}
