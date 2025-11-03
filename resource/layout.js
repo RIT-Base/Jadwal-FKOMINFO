@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // URL dari Anda untuk tab "Metadata"
     const METADATA_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7JM3GPuEhSQgyZVGrgpMDu11J8JE5RcATgG33CTh1xwPd46W2Q83lK2W_aq7vDRCT7LXwZSKoZ-qf/pub?gid=1162279961&single=true&output=csv'; 
+    const REPO_BASE_PATH = '/Jadwal-FKOMINFO';
 
-    loadHeaderAndTimestamp(METADATA_CSV_URL);
-    loadFooter();
+    loadHeaderAndTimestamp(METADATA_CSV_URL, REPO_BASE_PATH);
+    loadFooter(REPO_BASE_PATH);
 });
 
 async function loadHeaderAndTimestamp(metadataUrl) {
