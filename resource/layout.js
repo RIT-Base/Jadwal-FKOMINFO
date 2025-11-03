@@ -1,18 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // URL metadata Anda (ini sudah benar)
     const METADATA_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7JM3GPuEhSQgyZVGrgpMDu11J8JE5RcATgG33CTh1xwPd46W2Q83lK2W_aq7vDRCT7LXwZSKoZ-qf/pub?gid=1162279961&single=true&output=csv'; 
-    const REPO_BASE_PATH = '/Jadwal-FKOMINFO';
 
-    loadHeaderAndTimestamp(METADATA_CSV_URL, REPO_BASE_PATH);
-    loadFooter(REPO_BASE_PATH);
+    // Memuat header dan footer menggunakan path relatif
+    loadHeaderAndTimestamp(METADATA_CSV_URL);
+    loadFooter();
 });
 
 async function loadHeaderAndTimestamp(metadataUrl) {
     try {
         // 1. Ambil file _header.html
+        // Path ini relatif terhadap file HTML (index.html, ruangan.html)
         const headerResponse = await fetch('_header.html');
-        if (!headerResponse.ok) throw new Error('File _header.html tidak ditemukan');
+        if (!headerResponse.ok) {
+            console.error('Gagal mengambil _header.html. Status:', headerResponse.status);
+            throw new Error('File _header.html tidak ditemukan. Pastikan ada di folder root proyek.');
+        }
         const headerHTML = await headerResponse.text();
-        // Masukkan header ke bagian atas <body>
         document.body.insertAdjacentHTML('afterbegin', headerHTML);
         
         // 2. Tandai link navigasi yang aktif
@@ -22,14 +26,10 @@ async function loadHeaderAndTimestamp(metadataUrl) {
         const timestampSpan = document.getElementById('last-updated-timestamp');
         if (timestampSpan) {
             try {
-                // Tambahkan parameter cache-busting ( unik) agar browser selalu mengambil data baru
                 const metaResponse = await fetch(metadataUrl + '&_cache=' + new Date().getTime());
                 if (!metaResponse.ok) throw new Error('Gagal mengambil metadata timestamp');
                 
-                // Teks dari sel A1 akan menjadi isi dari file .csv
                 const timestampText = await metaResponse.text();
-                
-                // Set teks timestamp di header
                 timestampSpan.textContent = timestampText.trim(); 
             } catch (error) {
                 console.error('Gagal memuat timestamp:', error);
@@ -43,10 +43,14 @@ async function loadHeaderAndTimestamp(metadataUrl) {
 
 async function loadFooter() {
      try {
+        // 1. Ambil file _footer.html
+        // Path ini relatif terhadap file HTML
         const response = await fetch('_footer.html');
-        if (!response.ok) throw new Error('File _footer.html tidak ditemukan');
+        if (!response.ok) {
+             console.error('Gagal mengambil _footer.html. Status:', response.status);
+            throw new Error('File _footer.html tidak ditemukan. Pastikan ada di folder root proyek.');
+        }
         const footerHTML = await response.text();
-        // Masukkan footer ke bagian akhir <body>
         document.body.insertAdjacentHTML('beforeend', footerHTML);
     } catch (error) {
         console.error('Gagal memuat footer:', error);
@@ -54,16 +58,23 @@ async function loadFooter() {
 }
 
 function setActiveNavLink() {
-    // Dapatkan nama file halaman saat ini (mis: "index.html" atau "ruangan.html")
-    const currentPage = window.location.pathname.split('/').pop();
-    // Jika halaman root (mis: "/"), anggap sebagai "index.html"
-    const pageName = currentPage === '' ? 'index.html' : currentPage;
+    // Dapatkan path lengkap halaman saat ini (mis: "/Jadwal-FKOMINFO/ruangan.html")
+    const currentPagePath = window.location.pathname;
     
+    // Dapatkan nama filenya saja (mis: "ruangan.html" atau "" jika di root)
+    const pageName = currentPagePath.split('/').pop();
+
     const navLinks = document.querySelectorAll('header nav a');
     
     navLinks.forEach(link => {
-        const linkPage = link.getAttribute('href').split('/').pop();
-        if (linkPage === pageName) {
+        const linkHref = link.getAttribute('href'); // mis: "index.html" atau "ruangan.html"
+        
+        // Jika link adalah "index.html" dan halaman saat ini adalah root ("") atau "index.html"
+        if (linkHref === 'index.html' && (pageName === '' || pageName === 'index.html')) {
+            link.classList.add('active');
+        }
+        // Jika link lain cocok dengan nama halaman
+        else if (linkHref === pageName) {
             link.classList.add('active');
         }
     });
