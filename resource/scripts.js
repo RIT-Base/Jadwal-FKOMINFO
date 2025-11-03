@@ -47,11 +47,15 @@ async function initJadwalPage() {
         try {
             const response = await fetch(csvUrl);
             const csvText = await response.text();
-            const data = csvText.trim().split('\n').slice(1).map(row => {
+            let data = csvText.trim().split('\n').slice(1).map(row => {
                 const values = row.split('\t');
                 return { Jurusan: values[0].trim(), Hari: values[1].trim(), Mulai: values[2].trim(), Selesai: values[3].trim(), Ruang: values[4].trim(), Kode: values[5].trim(), Matakuliah: values[6].trim(), Kelas: values[7].trim(), SKS: values[8].trim(), Dosen: values[9].trim(), Semester: values[10].trim() };
             });
-            allData = data;
+            
+            // --- TAMBAHAN: Filter untuk mengabaikan data dengan hari "NA" ---
+            allData = data.filter(item => item.Hari.toUpperCase() !== 'NA');
+            // -----------------------------------------------------------------
+
             populateFilters(allData);
             renderJadwal(allData);
         } catch (error) {
@@ -84,6 +88,7 @@ async function initJadwalPage() {
         jadwalContainer.innerHTML = '';
         const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
         const groupedByDay = days.reduce((acc, day) => {
+            // Filter tambahan di sini tidak lagi diperlukan karena allData sudah bersih
             const schedules = data.filter(item => item.Hari.toLowerCase() === day.toLowerCase());
             if (schedules.length > 0) acc[day] = schedules.sort((a, b) => a.Mulai.localeCompare(b.Mulai));
             return acc;

@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const response = await fetch(csvUrl);
             const csvText = await response.text();
-            const data = csvText.trim().split('\n').slice(1).map(row => {
+            let data = csvText.trim().split('\n').slice(1).map(row => {
                 const values = row.split(',');
                 return {
                     Ruang: values[4].trim(),
@@ -26,14 +26,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     Mulai: values[2].trim(),
                     Selesai: values[3].trim(),
                     Matakuliah: values[6].trim(),
-                    Kelas: values[7].trim() // <-- Data Kelas ditambahkan di sini
+                    Kelas: values[7].trim()
                 };
             });
+
+            // --- TAMBAHAN: Filter untuk mengabaikan data dengan hari "NA" ---
+            data = data.filter(item => item.Hari.toUpperCase() !== 'NA');
+            // -----------------------------------------------------------------
+
             allDataByRoom = data.reduce((acc, item) => {
                 if (!acc[item.Ruang]) acc[item.Ruang] = [];
                 acc[item.Ruang].push(item);
                 return acc;
             }, {});
+                    
             loadingDiv.style.display = 'none';
         } catch (error) {
             loadingDiv.textContent = 'Gagal memuat data.';
@@ -100,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     data-matkul="${schedule.Matakuliah}"
                     data-jam="${schedule.Mulai.slice(0,5)} - ${schedule.Selesai.slice(0,5)}"
                     data-kelas="${schedule.Kelas}"> 
-                </div>`; // <-- Atribut data-kelas ditambahkan
+                </div>`;
             });
             
             let timeMarkersHTML = '';
@@ -141,8 +147,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             tooltip.className = 'custom-tooltip';
             const matkul = e.target.dataset.matkul;
             const jam = e.target.dataset.jam;
-            const kelas = e.target.dataset.kelas; // <-- Ambil data kelas
-            tooltip.innerHTML = `<strong>${matkul} (Kelas ${kelas})</strong><br>${jam}`; // <-- Tampilkan kelas
+            const kelas = e.target.dataset.kelas;
+            tooltip.innerHTML = `<strong>${matkul} (Kelas ${kelas})</strong><br>${jam}`;
             document.body.appendChild(tooltip);
         }
     });
@@ -153,15 +159,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const tooltipWidth = tooltip.offsetWidth;
             const pageWidth = window.innerWidth;
 
-            // Default: center on cursor
             let left = e.pageX - tooltipWidth / 2;
-
-            // Prevent going beyond the left edge
             if (left < 0) {
                 left = 0;
             }
-
-            // Prevent going beyond the right edge
             if (left + tooltipWidth > pageWidth) {
                 left = pageWidth - tooltipWidth;
             }
@@ -183,7 +184,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Inisialisasi
     await loadAndProcessData();
     const todayIndex = new Date().getDay(); // Minggu=0, Senin=1, ..., Sabtu=6
-    // Jika hari Minggu, pilih Senin (indeks 0). Jika hari lain, pilih hari itu (indeks: hari - 1).
     const buttonIndex = todayIndex === 0 ? 0 : todayIndex - 1;
     const activeDayButton = dayFilterContainer.children[buttonIndex];
     if (activeDayButton) {

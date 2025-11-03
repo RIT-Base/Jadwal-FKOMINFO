@@ -20,10 +20,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const response = await fetch(tsvUrl);
             const tsvText = await response.text();
-            allData = tsvText.trim().split('\n').slice(1).map((row, index) => {
+            let parsedData = tsvText.trim().split('\n').slice(1).map((row, index) => {
                 const values = row.split('\t');
                 return { id: index, Jurusan: values[0].trim(), Hari: values[1].trim(), Mulai: values[2].trim(), Selesai: values[3].trim(), Ruang: values[4].trim(), Matakuliah: values[6].trim(), Kelas: values[7].trim(), Semester: values[10].trim() };
             });
+            
+            // --- TAMBAHAN: Filter untuk mengabaikan data dengan hari "NA" ---
+            allData = parsedData.filter(item => item.Hari.toUpperCase() !== 'NA');
+            // -----------------------------------------------------------------
             
             populateInitialFilters();
             setupEventListeners();
@@ -103,9 +107,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         const overlappedCourseIds = new Set();
         activeCourses.forEach(course => {
+            // Cek "NA" di sini tidak lagi diperlukan karena allData sudah bersih
             const formattedDay = capitalize(course.Hari);
             const dayIndex = days.indexOf(formattedDay);
-            if (dayIndex === -1) return;
+            if (dayIndex === -1) return; // Ini akan mengabaikan hari yang tidak valid (misal "Minggu")
             const startRow = timeToRow(course.Mulai), duration = timeToRow(course.Selesai) - startRow;
             if (duration <= 0) return;
             const col = dayIndex + 2;
@@ -124,7 +129,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!overlappedCourseIds.has(course.id)) {
                 const formattedDay = capitalize(course.Hari);
                 const dayIndex = days.indexOf(formattedDay);
+                if (dayIndex === -1) return; // Pengaman ganda
                 const startRow = timeToRow(course.Mulai), duration = timeToRow(course.Selesai) - startRow;
+                if (duration <= 0) return; // Pengaman ganda
                 const col = dayIndex + 2;
 
                 const scheduleEl = document.createElement('div');
@@ -145,9 +152,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const day = capitalize(coursesInCell[0].Hari);
                 const col = days.indexOf(day) + 2;
+                if (col < 2) return; // Pengaman ganda
                 const groupStartRow = Math.min(...coursesInCell.map(c => timeToRow(c.Mulai)));
                 const groupEndRow = Math.max(...coursesInCell.map(c => timeToRow(c.Selesai)));
                 const duration = groupEndRow - groupStartRow;
+                if (duration <= 0) return; // Pengaman ganda
 
                 const indicator = document.createElement('div');
                 indicator.className = 'overlap-indicator';
@@ -175,7 +184,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         if (e.target.classList.contains('overlap-indicator')) {
             const courses = JSON.parse(e.target.dataset.courses);
-            // Konten popover sekarang menyertakan tombol hapus
             popover.innerHTML = `<h4>Jadwal Bentrok</h4><ul>` + 
                 courses.map(c => `
                     <li>
@@ -189,21 +197,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             popover.style.display = 'block';
             const rect = e.target.getBoundingClientRect();
-            // Posisi popover disesuaikan agar tidak keluar layar
             popover.style.left = `${Math.min(rect.left, window.innerWidth - popover.offsetWidth - 20)}px`;
             popover.style.top = `${rect.bottom + 5}px`;
         }
     }
 
-    // TAMBAHKAN FUNGSI BARU INI
     function handlePopoverClick(e) {
         if (e.target.classList.contains('btn-remove-popover')) {
             const idToRemove = parseInt(e.target.dataset.id, 10);
-            // Hapus mata kuliah dari daftar utama
             activeCourses = activeCourses.filter(c => c.id !== idToRemove);
-            // Sembunyikan popover
             popover.style.display = 'none';
-            // Gambar ulang timeline
             renderTimeline();
         }
     }
